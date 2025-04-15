@@ -28,7 +28,7 @@ void updateWheels(const position_t& current, const position_t& target,
     commandedAngular = fmin(fmax(commandedAngular, -maxAngularSpeed), maxAngularSpeed); // Limit angular speed
     
     // Update each wheel with the computed linear and angular speed commands.
-    wheelA.update(commandedLinear, commandedAngular);
-    wheelB.update(commandedLinear, commandedAngular);
-    wheelC.update(commandedLinear, commandedAngular);
+    wheelA.update(commandedLinear, errorTheta, commandedAngular);
+    wheelB.update(commandedLinear, errorTheta, commandedAngular);
+    wheelC.update(commandedLinear, errorTheta, commandedAngular);
 }
