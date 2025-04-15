@@ -1,7 +1,7 @@
 #include <math.h>
 #include "wheel.h"
 
-Wheel::Wheel(double dist, double ang, double diameter, AccelStepper& stepper) {
+Wheel::Wheel(double dist, double ang, double diameter, AccelStepper* stepper) {
     distanceToCenter = dist;
     angle = ang;
     motor = stepper;
@@ -28,8 +28,10 @@ void Wheel::update(double linear, double theta, double angular) {
 // speed is in rps
 void Wheel::setSpeed(double speed) {
     double stepsPerRevolution = 200;
-    double microstepping = 8;
+    double microstepping = 4;
     double stepsPerSecond = speed * stepsPerRevolution * microstepping; // Convert rps to steps/s
     // Set the motor speed.
-    motor.setSpeed(stepsPerSecond);
+    Serial.print("Setting speed: ");
+    Serial.println(stepsPerSecond);
+    motor -> setSpeed(stepsPerSecond);
 }
