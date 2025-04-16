@@ -24,9 +24,9 @@ AccelStepper steppers[STEPPER_COUNT] = {
     {AccelStepper::DRIVER, PIN_STEPPER_STEP_4, PIN_STEPPER_DIR_4, PIN_STEPPER_ENABLE_4},
 };
 
-Wheel wheelA(150, 0, steppers[0]);    // WheelA at 0°
-Wheel wheelB(150, 120, steppers[1]);  // WheelB at 120°
-Wheel wheelC(150, 240, steppers[2]);  // WheelC at 240°
+Wheel wheelA(150,   0, 600, steppers[0]);  // WheelA at 0°
+Wheel wheelB(150, 120, 600, steppers[1]);  // WheelB at 120°
+Wheel wheelC(150, 240, 600, steppers[2]);  // WheelC at 240°
 
 position_t currentPosition, targetPosition;
 
@@ -55,6 +55,8 @@ void setup()
   initStepper(steppers[1], DEFAULT_MAX_SPEED, DEFAULT_MAX_ACCEL, PIN_STEPPER_ENABLE_2);
   initStepper(steppers[2], DEFAULT_MAX_SPEED, DEFAULT_MAX_ACCEL, PIN_STEPPER_ENABLE_3);
   initStepper(steppers[3], DEFAULT_MAX_SPEED, DEFAULT_MAX_ACCEL, PIN_STEPPER_ENABLE_4);
+  for (int i = 0; i < STEPPER_COUNT; i++)
+    steppers[i].enableOutputs();
 
 
   currentPosition = { 0.0, 0.0, 0.0 };
