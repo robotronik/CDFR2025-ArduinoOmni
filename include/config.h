@@ -4,17 +4,9 @@
 
 #define BUFFERONRECEIVESIZE 32
 
-// Pin that enables the 5V power supply for the servos
-#define PIN_SERVOS_POWER 14
-
-//Pin Servo moteur
-#define PIN_SERVOMOTEUR_1 7
-#define PIN_SERVOMOTEUR_2 6
-#define PIN_SERVOMOTEUR_3 9
-#define PIN_SERVOMOTEUR_4 8
-#define PIN_SERVOMOTEUR_5 11
-#define PIN_SERVOMOTEUR_6 10
-#define PIN_SERVOMOTEUR_7 13
+//configuration Stepper
+#define DEFAULT_MAX_SPEED 5000  // Vitesse maximale (en pas par seconde)
+#define DEFAULT_MAX_ACCEL 8000 // Accélération maximale (en pas par seconde carré)
 
 //Pin Moteur pas a pas VALEUR HAUTE 2200 avec Microstep 1/8
 #define PIN_STEPPER_SLEEP 22
@@ -35,28 +27,7 @@
 #define PIN_STEPPER_DIR_4 29
 #define PIN_STEPPER_ENABLE_4 31
 
-// DC Motor Pins
-#define PIN_MOTEURDC_REVERSE_1 45
-#define PIN_MOTEURDC_FORWARD_1 44
-
-// Sensor Pins
-#define PIN_SENSOR_1 32
-#define PIN_SENSOR_2 33
-#define PIN_SENSOR_3 34
-#define PIN_SENSOR_4 35
-#define PIN_SENSOR_5 36
-#define PIN_SENSOR_6 37
-#define PIN_SENSOR_7 38
-#define PIN_SENSOR_8 39
-
 // LED Pins
 #define PIN_LED_1_B 66 //A12
 #define PIN_LED_1_G 65 //A11
 #define PIN_LED_1_R 64 //A10
-
-// PWM Lidar
-#define PIN_PWM_LIDAR 46
-
-//configuration Stepper
-#define DEFAULT_MAX_SPEED 5000  // Vitesse maximale (en pas par seconde)
-#define DEFAULT_MAX_ACCEL 8000 // Accélération maximale (en pas par seconde carré)
