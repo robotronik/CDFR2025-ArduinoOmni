@@ -27,7 +27,7 @@ void updateWheels(const position_t& current, const position_t& target,
     double commandedAngular = kP_angular * errorTheta;
     
     // Update each wheel with the computed linear and angular speed commands.
-    updateWheel(wheelA, commandedLinear, commandedAngular);
-    updateWheel(wheelB, commandedLinear, commandedAngular);
-    updateWheel(wheelC, commandedLinear, commandedAngular);
+    wheelA.update(commandedLinear, commandedAngular);
+    wheelB.update(commandedLinear, commandedAngular);
+    wheelC.update(commandedLinear, commandedAngular);
 }
