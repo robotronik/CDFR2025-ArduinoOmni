@@ -1,5 +1,4 @@
-#include <iostream>
-#include <cmath>
+#include <math.h>
 #include "wheel.h"
 
 Wheel::Wheel(double dist, double ang, AccelStepper& stepper) {
@@ -15,7 +14,7 @@ void Wheel::updateWheel(double commandedLinear, double commandedAngular) {
     double rad = angle * M_PI / 180.0;
     
     // Compute the wheel speed by projecting the commanded linear velocity and adding the contribution of rotational velocity.
-    double wheelSpeed = -std::sin(rad) * commandedLinear + distanceToCenter * commandedAngular;
+    double wheelSpeed = -sin(rad) * commandedLinear + distanceToCenter * commandedAngular;
     setSpeed(wheelSpeed);
 }
 

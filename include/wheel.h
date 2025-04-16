@@ -8,7 +8,7 @@ public:
 
     // Constructor to initialize wheel geometry.
     Wheel(double dist, double ang, AccelStepper& stepper);
-    updateWheel(double commandedLinear, double commandedAngular);
+    void updateWheel(double commandedLinear, double commandedAngular);
 
 private:
     // The distance from the center of the robot to the wheel (in mm)

@@ -1,5 +1,5 @@
 #include "control.h"
-#include <cmath>
+#include <math.h>
 
 // Updates the speeds of three wheels based on the current and target positions.
 // The controller computes the distance and orientation error and then determines
@@ -12,7 +12,7 @@ void updateWheels(const position_t& current, const position_t& target,
     double dy = target.y - current.y; // in mm
 
     // Compute the Euclidean distance error in meters (mm to m conversion).
-    double errorDistance = std::sqrt(dx * dx + dy * dy) / 1000.0;
+    double errorDistance = sqrt(dx * dx + dy * dy) / 1000.0;
 
     // Compute the orientation error.
     // Difference in theta (in degrees) and then convert to radians.
