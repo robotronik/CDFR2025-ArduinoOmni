@@ -1,13 +1,13 @@
 #include "odometry/I2CDevice.h"
 
-I2CDevice::I2CDevice(TwoWire &wirePort, uint8_t address)
+I2CDevice::I2CDevice(SoftWire &wirePort, uint8_t address)
 {
     _wire = &wirePort;
     setAddress(address);
     setTimeout(1000);
     setRetries(3);
     setClockSpeed(400000);
-    setI2cTimeout(1000);
+    setTimeout(1000);
 }
 
 int I2CDevice::readRegister(uint8_t reg, uint8_t *data, uint8_t size, int &bytesRead)
@@ -53,7 +53,7 @@ void I2CDevice::setClockSpeed(uint32_t clockSpeed)
 }
 
 // Timeout in ms
-void I2CDevice::setI2cTimeout(uint32_t i2cTimeout)
+void I2CDevice::setTimeout(uint32_t i2cTimeout)
 {
     _i2cTimeout = i2cTimeout;
     _wire->setTimeout(_i2cTimeout);

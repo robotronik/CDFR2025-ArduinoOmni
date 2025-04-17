@@ -1,11 +1,14 @@
 #include <Arduino.h>
 #include <AccelStepper.h>
 #include <Wire.h>
+#include <SoftWire.h>
 #include "config.h"
 #include "utils.h"
 #include "RGB_LED.h"
 #include "common/protocol.h"
 #include "control.h"
+#include "odometry/I2Cdevice.h"
+#include "odometry/OTOS.h"
 
 // Comment this line to disable serial debug
 #define SERIAL_DEBUG
@@ -28,12 +31,18 @@ Wheel wheelA(130,   0, 60, &steppers[0]);  // WheelA at 0°
 Wheel wheelB(130, 120, 60, &steppers[1]);  // WheelB at 120°
 Wheel wheelC(130, 240, 60, &steppers[2]);  // WheelC at 240°
 
-position_t currentPosition, targetPosition;
+position_t currentPosition, targetPosition, currentVelocity, currentAcceleration;
 
 uint8_t onReceiveData[BUFFERONRECEIVESIZE];
 // int onReceiveDataSize = 0;
 uint8_t ResponseData[BUFFERONRECEIVESIZE];
 int ResponseDataSize = 0;
+
+// SDA, SCL
+SoftWire i2c(-1, -1);
+I2CDevice i2cDevice(i2c, I2C_ADDRESS);
+OTOS otos;
+
 
 void receiveEvent(int numBytes);
 void requestEvent();
@@ -67,9 +76,7 @@ void setup()
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
 
-  
-  updateWheels(currentPosition, targetPosition,
-    wheelA, wheelB, wheelC);
+  otos.begin(i2cDevice);
 }
 
 void loop()
@@ -77,6 +84,18 @@ void loop()
   for (int i = 0; i < STEPPER_COUNT; i++)
     steppers[i].runSpeed();
   led.run();
+
+  position_t measPos, measVel, measAcc;
+
+  return_t ret = otos.getPosVelAcc(measPos, measVel, measAcc);
+  if (ret == ret_OK)
+  {
+    currentPosition = measPos;
+    currentVelocity = measVel;
+    currentAcceleration = measAcc;
+    updateWheels(currentPosition, targetPosition,
+      wheelA, wheelB, wheelC);
+  }
 }
 
 void receiveEvent(int numBytes)

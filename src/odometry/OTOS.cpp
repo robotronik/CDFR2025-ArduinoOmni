@@ -1,12 +1,12 @@
 
 #include "odometry/OTOS.h"
+#include "Arduino.h"
 
 OTOS::OTOS()
 {
     _commBus = nullptr;
-    _linearUnit = kOtosLinearUnitMeters;
     _angularUnit = kOtosAngularUnitDegrees;
-    _meterToUnit = kMeterToInch;
+    _meterToUnit = 1000.0;
     _radToUnit = kRadianToDegree;
 }
 
@@ -73,7 +73,7 @@ return_t OTOS::selfTest()
     for (int i = 0; i < 10; i++)
     {
         // Give a short delay between reads
-        delayMs(5);
+        delay(5);
 
         // Read the self-test register
         err = _commBus->readRegister(kRegSelfTest, selfTest.value);
@@ -99,7 +99,7 @@ return_t OTOS::calibrateImu(uint8_t numSamples, bool waitUntilDone)
         return ret_FAIL;
 
     // Wait 1 sample period (2.4ms) to ensure the register updates
-    delayMs(3);
+    delay(3);
 
     // Do we need to wait until the calibration finishes?
     if (!waitUntilDone)
@@ -123,7 +123,7 @@ return_t OTOS::calibrateImu(uint8_t numSamples, bool waitUntilDone)
         // Give a short delay between reads. As of firmware v1.0, samples take
         // 2.4ms each, so 3ms should guarantee the next sample is done. This
         // also ensures the max attempts is not exceeded in normal operation
-        delayMs(3);
+        delay(3);
     }
 
     // Max number of attempts reached, calibration failed
@@ -134,24 +134,6 @@ return_t OTOS::getImuCalibrationProgress(uint8_t &numSamples)
 {
     // Read the IMU calibration register
     return _commBus->readRegister(kRegImuCalib, numSamples) == 0 ? ret_OK : ret_FAIL;
-}
-
-otos_linear_unit_t OTOS::getLinearUnit()
-{
-    return _linearUnit;
-}
-
-void OTOS::setLinearUnit(otos_linear_unit_t unit)
-{
-    // Check if this unit is already set
-    if (unit == _linearUnit)
-        return;
-
-    // Store new unit
-    _linearUnit = unit;
-
-    // Compute conversion factor to new units
-    _meterToUnit = (unit == kOtosLinearUnitMeters) ? 1.0f : kMeterToInch;
 }
 
 otos_angular_unit_t OTOS::getAngularUnit()
@@ -251,52 +233,52 @@ return_t OTOS::getStatus(otos_status_t &status)
     return _commBus->readRegister(kRegStatus, status.value) == 0 ? ret_OK : ret_FAIL;
 }
 
-return_t OTOS::getOffset(otos_pose2d_t &pose)
+return_t OTOS::getOffset(position_t &pose)
 {
     return readPoseRegs(kRegOffXL, pose, kInt16ToMeter, kInt16ToRad);
 }
 
-return_t OTOS::setOffset(otos_pose2d_t &pose)
+return_t OTOS::setOffset(position_t &pose)
 {
     return writePoseRegs(kRegOffXL, pose, kMeterToInt16, kRadToInt16);
 }
 
-return_t OTOS::getPosition(otos_pose2d_t &pose)
+return_t OTOS::getPosition(position_t &pose)
 {
     return readPoseRegs(kRegPosXL, pose, kInt16ToMeter, kInt16ToRad);
 }
 
-return_t OTOS::setPosition(otos_pose2d_t &pose)
+return_t OTOS::setPosition(position_t &pose)
 {
     return writePoseRegs(kRegPosXL, pose, kMeterToInt16, kRadToInt16);
 }
 
-return_t OTOS::getVelocity(otos_pose2d_t &pose)
+return_t OTOS::getVelocity(position_t &pose)
 {
     return readPoseRegs(kRegVelXL, pose, kInt16ToMps, kInt16ToRps);
 }
 
-return_t OTOS::getAcceleration(otos_pose2d_t &pose)
+return_t OTOS::getAcceleration(position_t &pose)
 {
     return readPoseRegs(kRegAccXL, pose, kInt16ToMpss, kInt16ToRpss);
 }
 
-return_t OTOS::getPositionStdDev(otos_pose2d_t &pose)
+return_t OTOS::getPositionStdDev(position_t &pose)
 {
     return readPoseRegs(kRegPosStdXL, pose, kInt16ToMeter, kInt16ToRad);
 }
 
-return_t OTOS::getVelocityStdDev(otos_pose2d_t &pose)
+return_t OTOS::getVelocityStdDev(position_t &pose)
 {
     return readPoseRegs(kRegVelStdXL, pose, kInt16ToMps, kInt16ToRps);
 }
 
-return_t OTOS::getAccelerationStdDev(otos_pose2d_t &pose)
+return_t OTOS::getAccelerationStdDev(position_t &pose)
 {
     return readPoseRegs(kRegAccStdXL, pose, kInt16ToMpss, kInt16ToRpss);
 }
 
-return_t OTOS::getPosVelAcc(otos_pose2d_t &pos, otos_pose2d_t &vel, otos_pose2d_t &acc)
+return_t OTOS::getPosVelAcc(position_t &pos, position_t &vel, position_t &acc)
 {
     // Read all pose registers
     uint8_t rawData[18];
@@ -318,7 +300,7 @@ return_t OTOS::getPosVelAcc(otos_pose2d_t &pos, otos_pose2d_t &vel, otos_pose2d_
     return ret_OK;
 }
 
-return_t OTOS::getPosVelAccStdDev(otos_pose2d_t &pos, otos_pose2d_t &vel, otos_pose2d_t &acc)
+return_t OTOS::getPosVelAccStdDev(position_t &pos, position_t &vel, position_t &acc)
 {
     // Read all pose registers
     uint8_t rawData[18];
@@ -340,9 +322,9 @@ return_t OTOS::getPosVelAccStdDev(otos_pose2d_t &pos, otos_pose2d_t &vel, otos_p
     return ret_OK;
 }
 
-return_t OTOS::getPosVelAccAndStdDev(otos_pose2d_t &pos, otos_pose2d_t &vel, otos_pose2d_t &acc,
-                                             otos_pose2d_t &posStdDev, otos_pose2d_t &velStdDev,
-                                             otos_pose2d_t &accStdDev)
+return_t OTOS::getPosVelAccAndStdDev(position_t &pos, position_t &vel, position_t &acc,
+                                             position_t &posStdDev, position_t &velStdDev,
+                                             position_t &accStdDev)
 {
     // Read all pose registers
     uint8_t rawData[36];
@@ -367,7 +349,7 @@ return_t OTOS::getPosVelAccAndStdDev(otos_pose2d_t &pos, otos_pose2d_t &vel, oto
     return ret_OK;
 }
 
-return_t OTOS::readPoseRegs(uint8_t reg, otos_pose2d_t &pose, float rawToXY, float rawToH)
+return_t OTOS::readPoseRegs(uint8_t reg, position_t &pose, float rawToXY, float rawToH)
 {
     int bytesRead;
     uint8_t rawData[6];
@@ -387,7 +369,7 @@ return_t OTOS::readPoseRegs(uint8_t reg, otos_pose2d_t &pose, float rawToXY, flo
     return ret_OK;
 }
 
-return_t OTOS::writePoseRegs(uint8_t reg, otos_pose2d_t &pose, float xyToRaw, float hToRaw)
+return_t OTOS::writePoseRegs(uint8_t reg, position_t &pose, float xyToRaw, float hToRaw)
 {
     // Store raw data in a temporary buffer
     uint8_t rawData[6];
@@ -397,7 +379,7 @@ return_t OTOS::writePoseRegs(uint8_t reg, otos_pose2d_t &pose, float xyToRaw, fl
     return _commBus->writeRegister(reg, rawData, 6) == 0 ? ret_OK : ret_FAIL;
 }
 
-void OTOS::regsToPose(uint8_t *rawData, otos_pose2d_t &pose, float rawToXY, float rawToH)
+void OTOS::regsToPose(uint8_t *rawData, position_t &pose, float rawToXY, float rawToH)
 {
     // Store raw data
     int16_t rawX = (rawData[1] << 8) | rawData[0];
@@ -407,15 +389,15 @@ void OTOS::regsToPose(uint8_t *rawData, otos_pose2d_t &pose, float rawToXY, floa
     // Store in pose and convert to units
     pose.x = rawX * rawToXY * _meterToUnit;
     pose.y = rawY * rawToXY * _meterToUnit;
-    pose.h = rawH * rawToH * _radToUnit;
+    pose.a = rawH * rawToH * _radToUnit;
 }
 
-void OTOS::poseToRegs(uint8_t *rawData, otos_pose2d_t &pose, float xyToRaw, float hToRaw)
+void OTOS::poseToRegs(uint8_t *rawData, position_t &pose, float xyToRaw, float hToRaw)
 {
     // Convert pose units to raw data
     int16_t rawX = pose.x * xyToRaw / _meterToUnit;
     int16_t rawY = pose.y * xyToRaw / _meterToUnit;
-    int16_t rawH = pose.h * hToRaw / _radToUnit;
+    int16_t rawH = pose.a * hToRaw / _radToUnit;
 
     // Store raw data in buffer
     rawData[0] = rawX & 0xFF;

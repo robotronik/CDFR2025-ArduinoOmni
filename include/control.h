@@ -1,12 +1,7 @@
 #pragma once
 
 #include "wheel.h"
-
-typedef struct position {
-    double x; // Position X (mm)
-    double y; // Position Y (mm)
-    double theta; // Orientation (°)
-} position_t;
+#include "common/structs.h"
 
 // Updates the speeds of three wheels based on the current and target positions.
 // The controller computes the distance and orientation error and then determines

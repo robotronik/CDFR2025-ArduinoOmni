@@ -3,7 +3,7 @@
 typedef struct position {
     double x; // Position X (mm)
     double y; // Position Y (mm)
-    double theta; // Orientation (°)
+    double a; // Orientation (°)
 } position_t;
 
 typedef enum {

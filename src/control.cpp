@@ -12,9 +12,9 @@ void updateWheels(const position_t& current, const position_t& target,
     double dy = target.y - current.y; // in mm
 
     double errorDistance = sqrt(dx * dx + dy * dy);
-    double errorTheta = target.theta - current.theta;
+    double errorTheta = target.a - current.a;
 
-    double angleToTarget = current.theta - atan2(dy, dx) * 180 / M_PI; // in degrees
+    double angleToTarget = current.a - atan2(dy, dx) * 180 / M_PI; // in degrees
 
     double kP_linear = 1.0;   // Gain for linear speed (mm/s per mm error)
     double kP_angular = 1.0;  // Gain for angular speed (deg/s per deg error)

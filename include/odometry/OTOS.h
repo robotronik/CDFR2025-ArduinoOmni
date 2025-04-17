@@ -6,33 +6,6 @@
 #include "I2CDevice.h"
 
 
-/// @struct otos_pose2d_t
-/// @brief 2D pose structure, including x and y coordinates and heading angle
-/// @note Although pose is traditionally used for position and orientation, this
-/// structure is also used for velocity and acceleration by the OTOS driver
-typedef struct
-{
-    /// @brief X value
-    float x;
-
-    /// @brief Y value
-    float y;
-
-    /// @brief Heading value
-    float h;
-} otos_pose2d_t;
-
-/// @enum otos_linear_unit_t
-/// @brief Enumerations for linear units used by the OTOS driver
-typedef enum
-{
-    /// @brief Meters
-    kOtosLinearUnitMeters = 0,
-
-    /// @brief Inches (default)
-    kOtosLinearUnitInches = 1
-} otos_linear_unit_t;
-
 /// @enum otos_angular_unit_t
 /// @brief Enumerations for angular units used by the OTOS driver
 typedef enum
@@ -188,14 +161,6 @@ class OTOS
     /// @return 0 for succuss, negative for errors, positive for warnings
     return_t getImuCalibrationProgress(uint8_t &numSamples);
 
-    /// @brief Gets the linear unit used by all methods using a pose
-    /// @return Linear unit
-    otos_linear_unit_t getLinearUnit();
-
-    /// @brief Sets the linear unit used by all methods using a pose
-    /// @param unit Linear unit
-    void setLinearUnit(otos_linear_unit_t unit);
-
     /// @brief Gets the angular unit used by all methods using a pose
     /// @return Angular unit
     otos_angular_unit_t getAngularUnit();
@@ -251,19 +216,19 @@ class OTOS
     /// @brief Gets the offset of the OTOS
     /// @param pose Offset of the sensor relative to the center of the robot
     /// @return 0 for succuss, negative for errors, positive for warnings
-    return_t getOffset(otos_pose2d_t &pose);
+    return_t getOffset(position_t &pose);
 
     /// @brief Sets the offset of the OTOS. This is useful if your sensor is
     /// mounted off-center from a robot. Rather than returning the position of
     /// the sensor, the OTOS will return the position of the robot
     /// @param pose Offset of the sensor relative to the center of the robot
     /// @return 0 for succuss, negative for errors, positive for warnings
-    return_t setOffset(otos_pose2d_t &pose);
+    return_t setOffset(position_t &pose);
 
     /// @brief Gets the position measured by the OTOS
     /// @param pose Position measured by the OTOS
     /// @return 0 for succuss, negative for errors, positive for warnings
-    return_t getPosition(otos_pose2d_t &pose);
+    return_t getPosition(position_t &pose);
 
     /// @brief Sets the position measured by the OTOS. This is useful if your
     /// robot does not start at the origin, or you have another source of
@@ -271,17 +236,17 @@ class OTOS
     /// tracking from this position
     /// @param pose New position for the OTOS to track from
     /// @return 0 for succuss, negative for errors, positive for warnings
-    return_t setPosition(otos_pose2d_t &pose);
+    return_t setPosition(position_t &pose);
 
     /// @brief Gets the velocity measured by the OTOS
     /// @param pose Velocity measured by the OTOS
     /// @return 0 for succuss, negative for errors, positive for warnings
-    return_t getVelocity(otos_pose2d_t &pose);
+    return_t getVelocity(position_t &pose);
 
     /// @brief Gets the acceleration measured by the OTOS
     /// @param pose Acceleration measured by the OTOS
     /// @return 0 for succuss, negative for errors, positive for warnings
-    return_t getAcceleration(otos_pose2d_t &pose);
+    return_t getAcceleration(position_t &pose);
 
     /// @brief Gets the standard deviation of the measured position
     /// @param pose Standard deviation of the position measured by the OTOS
@@ -289,7 +254,7 @@ class OTOS
     /// @note These values are just the square root of the diagonal elements of
     /// the covariance matrices of the Kalman filters used in the firmware, so
     /// they are just statistical quantities and do not represent actual error!
-    return_t getPositionStdDev(otos_pose2d_t &pose);
+    return_t getPositionStdDev(position_t &pose);
 
     /// @brief Gets the standard deviation of the measured velocity
     /// @param pose Standard deviation of the velocity measured by the OTOS
@@ -297,7 +262,7 @@ class OTOS
     /// @note These values are just the square root of the diagonal elements of
     /// the covariance matrices of the Kalman filters used in the firmware, so
     /// they are just statistical quantities and do not represent actual error!
-    return_t getVelocityStdDev(otos_pose2d_t &pose);
+    return_t getVelocityStdDev(position_t &pose);
 
     /// @brief Gets the standard deviation of the measured acceleration
     /// @param pose Standard deviation of the acceleration measured by the OTOS
@@ -305,7 +270,7 @@ class OTOS
     /// @note These values are just the square root of the diagonal elements of
     /// the covariance matrices of the Kalman filters used in the firmware, so
     /// they are just statistical quantities and do not represent actual error!
-    return_t getAccelerationStdDev(otos_pose2d_t &pose);
+    return_t getAccelerationStdDev(position_t &pose);
 
     /// @brief Gets the position, velocity, and acceleration measured by the
     /// OTOS in a single burst read
@@ -313,7 +278,7 @@ class OTOS
     /// @param vel Velocity measured by the OTOS
     /// @param acc Acceleration measured by the OTOS
     /// @return 0 for succuss, negative for errors, positive for warnings
-    return_t getPosVelAcc(otos_pose2d_t &pos, otos_pose2d_t &vel, otos_pose2d_t &acc);
+    return_t getPosVelAcc(position_t &pos, position_t &vel, position_t &acc);
 
     /// @brief Gets the standard deviation of the measured position, velocity,
     /// and acceleration in a single burst read
@@ -321,7 +286,7 @@ class OTOS
     /// @param vel Standard deviation of the velocity measured by the OTOS
     /// @param acc Standard deviation of the acceleration measured by the OTOS
     /// @return 0 for succuss, negative for errors, positive for warnings
-    return_t getPosVelAccStdDev(otos_pose2d_t &pos, otos_pose2d_t &vel, otos_pose2d_t &acc);
+    return_t getPosVelAccStdDev(position_t &pos, position_t &vel, position_t &acc);
 
     /// @brief Gets the position, velocity, acceleration, and standard deviation
     /// of each in a single burst read
@@ -332,9 +297,9 @@ class OTOS
     /// @param velStdDev Standard deviation of the velocity measured by the OTOS
     /// @param accStdDev Standard deviation of the acceleration measured by the OTOS
     /// @return 0 for succuss, negative for errors, positive for warnings
-    return_t getPosVelAccAndStdDev(otos_pose2d_t &pos, otos_pose2d_t &vel, otos_pose2d_t &acc,
-                                      otos_pose2d_t &posStdDev, otos_pose2d_t &velStdDev,
-                                      otos_pose2d_t &accStdDev);
+    return_t getPosVelAccAndStdDev(position_t &pos, position_t &vel, position_t &acc,
+                                      position_t &posStdDev, position_t &velStdDev,
+                                      position_t &accStdDev);
 
     /// @brief Minimum scalar value for the linear and angular scalars
     static constexpr float kMinScalar = 0.872f;
@@ -343,21 +308,17 @@ class OTOS
     static constexpr float kMaxScalar = 1.127f;
 
   protected:
-    // Virtual function that must be implemented by the derived class to delay
-    // for a given number of milliseconds
-    virtual void delayMs(uint32_t ms) = 0;
-
     // Function to read raw pose registers and convert to specified units
-    return_t readPoseRegs(uint8_t reg, otos_pose2d_t &pose, float rawToXY, float rawToH);
+    return_t readPoseRegs(uint8_t reg, position_t &pose, float rawToXY, float rawToH);
 
     // Function to write raw pose registers and convert from specified units
-    return_t writePoseRegs(uint8_t reg, otos_pose2d_t &pose, float xyToRaw, float hToRaw);
+    return_t writePoseRegs(uint8_t reg, position_t &pose, float xyToRaw, float hToRaw);
 
     // Function to convert raw pose registers to a pose structure
-    void regsToPose(uint8_t *rawData, otos_pose2d_t &pose, float rawToXY, float rawToH);
+    void regsToPose(uint8_t *rawData, position_t &pose, float rawToXY, float rawToH);
 
     // Function to convert a pose structure to raw pose registers
-    void poseToRegs(uint8_t *rawData, otos_pose2d_t &pose, float xyToRaw, float hToRaw);
+    void poseToRegs(uint8_t *rawData, position_t &pose, float xyToRaw, float hToRaw);
 
     // I2C bus to use for communication
     I2CDevice *_commBus;
@@ -365,7 +326,6 @@ class OTOS
     // Units to be used by the public pose functions. Everything uses meters and
     // radians internally, so this just determines what conversion factor is
     // applied to the public functions
-    otos_linear_unit_t _linearUnit;
     otos_angular_unit_t _angularUnit;
 
     // Conversion factors from meters and radians to the current linear and
@@ -431,8 +391,6 @@ class OTOS
     static constexpr uint8_t kProductId = 0x5F;
 
     // Conversion factors
-    static constexpr float kMeterToInch = 39.37f;
-    static constexpr float kInchToMeter = 1.0f / kMeterToInch;
     static constexpr float kRadianToDegree = 180.0f / M_PI;
     static constexpr float kDegreeToRadian = M_PI / 180.0f;
 
