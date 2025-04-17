@@ -4,10 +4,10 @@
 // A simple class that represents an individual wheel.
 class Wheel {
 public:
-    AccelStepper motor;
+    AccelStepper* motor;
 
     // Constructor to initialize wheel geometry.
-    Wheel(double dist, double ang, double diameter, AccelStepper& stepper);
+    Wheel(double dist, double ang, double diameter, AccelStepper* stepper);
 
     void update(double linear, double theta, double angular);
     void setSpeed(double speed);

@@ -8,7 +8,7 @@
 #include "control.h"
 
 // Comment this line to disable serial debug
-// #define SERIAL_DEBUG
+#define SERIAL_DEBUG
 
 // TODO: move these defines later
 #define SERVO_COUNT 7
@@ -24,9 +24,9 @@ AccelStepper steppers[STEPPER_COUNT] = {
     {AccelStepper::DRIVER, PIN_STEPPER_STEP_4, PIN_STEPPER_DIR_4, PIN_STEPPER_ENABLE_4},
 };
 
-Wheel wheelA(150,   0, 600, steppers[0]);  // WheelA at 0°
-Wheel wheelB(150, 120, 600, steppers[1]);  // WheelB at 120°
-Wheel wheelC(150, 240, 600, steppers[2]);  // WheelC at 240°
+Wheel wheelA(130,   0, 60, &steppers[0]);  // WheelA at 0°
+Wheel wheelB(130, 120, 60, &steppers[1]);  // WheelB at 120°
+Wheel wheelC(130, 240, 60, &steppers[2]);  // WheelC at 240°
 
 position_t currentPosition, targetPosition;
 
@@ -66,16 +66,17 @@ void setup()
   Wire.setTimeout(1000);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
+
+  
+  updateWheels(currentPosition, targetPosition,
+    wheelA, wheelB, wheelC);
 }
 
 void loop()
 {
   for (int i = 0; i < STEPPER_COUNT; i++)
-    steppers[i].run();
+    steppers[i].runSpeed();
   led.run();
-
-  updateWheels(currentPosition, targetPosition,
-                wheelA, wheelB, wheelC);
 }
 
 void receiveEvent(int numBytes)

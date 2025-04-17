@@ -14,6 +14,8 @@ void updateWheels(const position_t& current, const position_t& target,
     double errorDistance = sqrt(dx * dx + dy * dy);
     double errorTheta = target.theta - current.theta;
 
+    double angleToTarget = current.theta - atan2(dy, dx) * 180 / M_PI; // in degrees
+
     double kP_linear = 1.0;   // Gain for linear speed (mm/s per mm error)
     double kP_angular = 1.0;  // Gain for angular speed (deg/s per deg error)
     
@@ -28,7 +30,12 @@ void updateWheels(const position_t& current, const position_t& target,
     commandedAngular = fmin(fmax(commandedAngular, -maxAngularSpeed), maxAngularSpeed); // Limit angular speed
     
     // Update each wheel with the computed linear and angular speed commands.
-    wheelA.update(commandedLinear, commandedAngular);
-    wheelB.update(commandedLinear, commandedAngular);
-    wheelC.update(commandedLinear, commandedAngular);
+    wheelA.update(commandedLinear, angleToTarget, commandedAngular);
+    wheelB.update(commandedLinear, angleToTarget, commandedAngular);
+    wheelC.update(commandedLinear, angleToTarget, commandedAngular);
+
+    Serial.print("commandedLinear");
+    Serial.print(commandedLinear);
+    Serial.print("commandedAngular");
+    Serial.print(commandedAngular);
 }
