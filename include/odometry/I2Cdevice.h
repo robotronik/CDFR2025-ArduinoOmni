@@ -8,6 +8,7 @@ class I2CDevice
     public:
         I2CDevice();
         I2CDevice(SoftWire &wirePort, uint8_t address = 0x17);
+        void begin();
         int readRegister(uint8_t reg, uint8_t *data, uint8_t size, int &bytesRead);
         int readRegister(uint8_t reg, uint8_t &data);
         int writeRegister(uint8_t reg, const uint8_t *data, uint8_t size);

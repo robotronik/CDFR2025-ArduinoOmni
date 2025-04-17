@@ -40,7 +40,7 @@ int ResponseDataSize = 0;
 
 // SDA, SCL
 SoftWire i2c(-1, -1);
-I2CDevice i2cDevice(i2c, I2C_ADDRESS);
+I2CDevice i2cDevice(i2c, -1);
 OTOS otos;
 
 
@@ -75,7 +75,7 @@ void setup()
   Wire.setTimeout(1000);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
-
+  
   otos.begin(i2cDevice);
 }
 

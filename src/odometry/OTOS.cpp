@@ -12,10 +12,12 @@ OTOS::OTOS()
 
 return_t OTOS::begin(I2CDevice& commBus)
 {
+    commBus.setAddress(kDefaultAddress);
     // Check the device address
     if (commBus.address() != kDefaultAddress)
         return ret_FAIL;
 
+    commBus.begin();
     // Set bus pointer
     _commBus = &commBus;
 

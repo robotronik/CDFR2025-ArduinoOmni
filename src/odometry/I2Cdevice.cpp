@@ -10,6 +10,10 @@ I2CDevice::I2CDevice(SoftWire &wirePort, uint8_t address)
     setTimeout(1000);
 }
 
+void I2CDevice::begin(){
+    _wire->begin();
+}
+
 int I2CDevice::readRegister(uint8_t reg, uint8_t *data, uint8_t size, int &bytesRead)
 {
     _wire->beginTransmission(_address);
