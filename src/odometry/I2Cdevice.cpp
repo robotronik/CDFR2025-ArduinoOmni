@@ -1,4 +1,4 @@
-#include "odometry/I2CDevice.h"
+#include "odometry/I2Cdevice.h"
 
 I2CDevice::I2CDevice(SoftWire &wirePort, uint8_t address)
 {

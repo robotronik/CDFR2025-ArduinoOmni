@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdint.h>
 #include "common/structs.h"
-#include "I2CDevice.h"
+#include "odometry/I2Cdevice.h"
 
 
 /// @enum otos_angular_unit_t
