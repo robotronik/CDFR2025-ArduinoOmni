@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <AccelStepper.h>
 #include <Wire.h>
-#include <SoftWire.h>
 #include "config.h"
 #include "utils.h"
 #include "RGB_LED.h"
@@ -27,9 +26,9 @@ AccelStepper steppers[STEPPER_COUNT] = {
     {AccelStepper::DRIVER, PIN_STEPPER_STEP_4, PIN_STEPPER_DIR_4, PIN_STEPPER_ENABLE_4},
 };
 
-Wheel wheelA(130,   0, 60, &steppers[0]);  // WheelA at 0°
-Wheel wheelB(130, 120, 60, &steppers[1]);  // WheelB at 120°
-Wheel wheelC(130, 240, 60, &steppers[2]);  // WheelC at 240°
+Wheel wheelA(130, 180, 60, &steppers[0]);  // WheelA at 0°
+Wheel wheelB(130, 60, 60, &steppers[1]);  // WheelB at 120°
+Wheel wheelC(130,-60, 60, &steppers[2]);  // WheelC at 240°
 
 position_t currentPosition, targetPosition, currentVelocity, currentAcceleration;
 
@@ -39,8 +38,7 @@ uint8_t ResponseData[BUFFERONRECEIVESIZE];
 int ResponseDataSize = 0;
 
 // SDA, SCL
-SoftWire i2c(-1, -1);
-I2CDevice i2cDevice(i2c, -1);
+I2CDevice i2cDevice(Wire, 0x17);
 OTOS otos;
 
 
@@ -69,14 +67,20 @@ void setup()
 
 
   currentPosition = { 0.0, 0.0, 0.0 };
-  targetPosition = { 1000.0, 0.0, 90.0 };
+  targetPosition = { 0.0, 0.0, 0.0 };
 
-  Wire.begin(I2C_ADDRESS);
-  Wire.setTimeout(1000);
-  Wire.onReceive(receiveEvent);
-  Wire.onRequest(requestEvent);
+  // Wire.begin(I2C_ADDRESS);
+  // Wire.setTimeout(1000);
+  // Wire.onReceive(receiveEvent);
+  // Wire.onRequest(requestEvent);
   
-  otos.begin(i2cDevice);
+  while (otos.begin(i2cDevice) == ret_FAIL){
+    Serial.println("OTOS not connected !");
+    delay(100);
+  }
+  Serial.println("OTOS connected !");
+  otos.calibrateImu();
+  otos.setPosition(currentPosition);
 }
 
 void loop()
@@ -88,8 +92,20 @@ void loop()
   position_t measPos, measVel, measAcc;
 
   return_t ret = otos.getPosVelAcc(measPos, measVel, measAcc);
+  if (ret == ret_FAIL)
+  {
+    Serial.println("OTOS not connected !");
+    return;
+  }
   if (ret == ret_OK)
   {
+    Serial.print("Pos: x: ");
+    Serial.print(measPos.x, 1);
+    Serial.print("  y: ");
+    Serial.print(measPos.y, 1);
+    Serial.print("  a: ");
+    Serial.println(measPos.a, 1);
+
     currentPosition = measPos;
     currentVelocity = measVel;
     currentAcceleration = measAcc;

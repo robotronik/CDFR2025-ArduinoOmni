@@ -321,7 +321,7 @@ class OTOS
     void poseToRegs(uint8_t *rawData, position_t &pose, float xyToRaw, float hToRaw);
 
     // I2C bus to use for communication
-    I2CDevice *_commBus;
+    I2CDevice* _commBus;
 
     // Units to be used by the public pose functions. Everything uses meters and
     // radians internally, so this just determines what conversion factor is

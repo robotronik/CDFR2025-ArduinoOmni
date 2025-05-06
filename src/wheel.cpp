@@ -31,7 +31,9 @@ void Wheel::setSpeed(double speed) {
     double microstepping = 4;
     double stepsPerSecond = speed * stepsPerRevolution * microstepping; // Convert rps to steps/s
     // Set the motor speed.
+    /*
     Serial.print("Setting speed: ");
     Serial.println(stepsPerSecond);
-    motor -> setSpeed(stepsPerSecond);
+    */
+    motor -> setSpeed(-stepsPerSecond);
 }

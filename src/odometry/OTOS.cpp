@@ -17,9 +17,14 @@ return_t OTOS::begin(I2CDevice& commBus)
     if (commBus.address() != kDefaultAddress)
         return ret_FAIL;
 
+    
+    Serial.println("Initializing OTOS...");
+
     commBus.begin();
     // Set bus pointer
     _commBus = &commBus;
+
+    Serial.println("Checking connection...");
 
     // Just check if the device is connected, no other setup is needed
     return isConnected();
@@ -30,6 +35,8 @@ return_t OTOS::isConnected()
     // Read the product ID
     uint8_t prodId;
     int err = _commBus->readRegister(kRegProductId, prodId);
+    Serial.print("Product ID: ");
+    Serial.println(prodId, HEX);
     if (err != 0)
         return ret_FAIL;
 

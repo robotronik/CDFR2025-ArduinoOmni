@@ -34,8 +34,10 @@ void updateWheels(const position_t& current, const position_t& target,
     wheelB.update(commandedLinear, angleToTarget, commandedAngular);
     wheelC.update(commandedLinear, angleToTarget, commandedAngular);
 
+    /*
     Serial.print("commandedLinear");
     Serial.print(commandedLinear);
     Serial.print("commandedAngular");
     Serial.print(commandedAngular);
+    */
 }
