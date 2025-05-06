@@ -1,7 +1,7 @@
 #include <math.h>
 #include "wheel.h"
 
-Wheel::Wheel(double dist, double ang, double diameter, ContinuousStepper<StepperDriver, KhoihTicker<AVR_PWM>>* stepper) {
+Wheel::Wheel(double dist, double ang, double diameter, ContinuousStepper<StepperDriver>* stepper) {
     distanceToCenter = dist;
     angle = ang;
     motor = stepper;
@@ -31,12 +31,20 @@ void Wheel::setSpeed(double speed) {
     double microstepping = 8;
     double stepsPerSecond = speed * stepsPerRevolution * microstepping; // Convert rps to steps/s
     // Set the motor speed
-    if (abs(stepsPerSecond) < 250)
-        stepsPerSecond = 0;
     motor->spin(-stepsPerSecond);
 
-    Serial.print("speed: ");
-    Serial.println(stepsPerSecond);
+    /*
+    int steps = abs(stepsPerSecond/200);
+    for (int i = 0; i < steps; i++) {
+        // turn on and off the stepPin_
+        digitalWrite(stepPin_, HIGH);
+        _NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();
+        _NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();
+        digitalWrite(stepPin_, LOW);        
+        _NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();
+        _NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();_NOP();
+    }
+        */
 
     // rpm
     // int rpm = speed * 60;

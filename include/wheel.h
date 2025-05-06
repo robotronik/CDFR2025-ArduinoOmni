@@ -1,15 +1,14 @@
 #pragma once
 #include <ContinuousStepper.h>
-#include <ContinuousStepper/Tickers/KhoiH_PWM.hpp>
-#include <AVR_PWM.h>
+#include <ContinuousStepper/Tickers/TimerOne.hpp>
 
 // A simple class that represents an individual wheel.
 class Wheel {
 public:
-    ContinuousStepper<StepperDriver, KhoihTicker<AVR_PWM>>* motor;
+    ContinuousStepper<StepperDriver>* motor;
 
     // Constructor to initialize wheel geometry.
-    Wheel(double dist, double ang, double diameter, ContinuousStepper<StepperDriver, KhoihTicker<AVR_PWM>>* stepper);
+    Wheel(double dist, double ang, double diameter, ContinuousStepper<StepperDriver>* stepper);
 
     void update(double linear, double theta, double angular);
     void setSpeed(double speed);

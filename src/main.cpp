@@ -1,7 +1,8 @@
 #include <Arduino.h>
+
 #include <ContinuousStepper.h>
-#include <ContinuousStepper/Tickers/KhoiH_PWM.hpp>
-#include <AVR_PWM.h>
+#include <ContinuousStepper/Tickers/TimerOne.hpp>
+
 #include <Wire.h>
 #include "config.h"
 #include "utils.h"
@@ -21,14 +22,16 @@
 
 RGB_LED led(PIN_LED_1_R, PIN_LED_1_G, PIN_LED_1_B);
 
-ContinuousStepper<StepperDriver, KhoihTicker<AVR_PWM>> stepper1;
-ContinuousStepper<StepperDriver, KhoihTicker<AVR_PWM>> stepper2;
-ContinuousStepper<StepperDriver, KhoihTicker<AVR_PWM>> stepper3;
-ContinuousStepper<StepperDriver, KhoihTicker<AVR_PWM>> stepper4;
+ContinuousStepper<StepperDriver> stepper1;
+ContinuousStepper<StepperDriver> stepper2;
+ContinuousStepper<StepperDriver> stepper3;
+ContinuousStepper<StepperDriver> stepper4;
+
+void loopSteppers();
 
 Wheel wheelA(130, 180, 60, &stepper1);  // WheelA at 0°
-Wheel wheelB(130, 60, 60, &stepper2);  // WheelB at 120°
-Wheel wheelC(130,-60, 60, &stepper4);  // WheelC at 240°
+Wheel wheelB(130,  60, 60, &stepper2);  // WheelB at 120°
+Wheel wheelC(130, -60, 60, &stepper4);  // WheelC at 240°
 
 position_t currentPosition, targetPosition, currentVelocity, currentAcceleration;
 
@@ -39,7 +42,7 @@ OTOS otos;
 
 void receiveEvent(int numBytes);
 void requestEvent();
-void initStepper(ContinuousStepper<StepperDriver, KhoihTicker<AVR_PWM>> &stepper, int maxSpeed, int Accel, int enablePin);
+void initStepper(ContinuousStepper<StepperDriver> &stepper, int maxSpeed, int Accel, int enablePin);
 void initOutPin(int pin, bool low);
 void initInPin(int pin);
 
@@ -59,6 +62,9 @@ void setup()
   initStepper(stepper3, PIN_STEPPER_STEP_3, PIN_STEPPER_DIR_3, PIN_STEPPER_ENABLE_3);
   initStepper(stepper4, PIN_STEPPER_STEP_4, PIN_STEPPER_DIR_4, PIN_STEPPER_ENABLE_4);
 
+  Timer1.initialize(50);
+  Timer1.attachInterrupt(loopSteppers);
+
   currentPosition = { 0.0, 0.0, 0.0 };
   targetPosition = { 0.0, 0.0, 0.0 };
 
@@ -74,10 +80,19 @@ void setup()
 void loop()
 {
   led.run();
-  stepper1.loop();
-  stepper2.loop();
-  stepper3.loop();
-  stepper4.loop();
+
+  if (millis() % 10000 < 5000)
+  {
+    // set target
+    targetPosition.x = 200;
+    targetPosition.y = 0;
+  }
+  else
+  {
+    // set target
+    targetPosition.x = 0;
+    targetPosition.y = 0;
+  }
 
 
   position_t measPos, measVel, measAcc;
@@ -105,12 +120,12 @@ void loop()
       wheelA, wheelB, wheelC);
   }
 }
-void initStepper(ContinuousStepper<StepperDriver, KhoihTicker<AVR_PWM>> &stepper, int step_pin, int dir_pin, int enablePin)
+void initStepper(ContinuousStepper<StepperDriver> &stepper, int step_pin, int dir_pin, int enablePin)
 {
-  stepper.begin(step_pin, dir_pin); // step pin must support PWM
+  stepper.begin(step_pin, dir_pin);
   stepper.spin(0);
   stepper.setAcceleration(1000000); // 1000 steps/s^2
-  initOutPin(enablePin, false);
+  initOutPin(enablePin, true);
   //stepper.setEnablePin(enablePin);
   //stepper.setPinsInverted(false, false, true);
   //stepper.disableOutputs();
@@ -127,5 +142,15 @@ void initOutPin(int pin, bool low)
 void initInPin(int pin)
 {
   pinMode(pin, INPUT_PULLUP);
+  return;
+}
+
+
+void loopSteppers(void)
+{
+  stepper1.loop();
+  stepper2.loop();
+  // stepper3.loop();
+  stepper4.loop();
   return;
 }

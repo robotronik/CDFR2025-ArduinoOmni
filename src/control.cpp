@@ -16,15 +16,15 @@ void updateWheels(const position_t& current, const position_t& target,
 
     double angleToTarget = current.a - atan2(dy, dx) * 180 / M_PI; // in degrees
 
-    double kP_linear = 5.0;   // Gain for linear speed (mm/s per mm error)
-    double kP_angular = 5.0;  // Gain for angular speed (deg/s per deg error)
+    double kP_linear = 3.0;   // Gain for linear speed (mm/s per mm error)
+    double kP_angular = 3.0;  // Gain for angular speed (deg/s per deg error)
     
     // Compute commanded speeds.
     double commandedLinear = kP_linear * errorDistance; // mm/s
     double commandedAngular = kP_angular * errorTheta;  // degs/s
 
-    double maxLinearSpeed = 10000.0; // mm/s
-    double maxAngularSpeed = 3600.0;  // deg/s
+    double maxLinearSpeed = 1000.0; // mm/s
+    double maxAngularSpeed = 360.0;  // deg/s
 
     commandedLinear = fmin(fmax(commandedLinear, -maxLinearSpeed), maxLinearSpeed); // Limit linear speed
     commandedAngular = fmin(fmax(commandedAngular, -maxAngularSpeed), maxAngularSpeed); // Limit angular speed
